@@ -1,56 +1,36 @@
-import streamlit as st
-
-st.title("Bristol-Myers Squibb – Molecular Translation")
-
-
-# def predict():
 import os
-import albumentations as A
-import warnings
-from typing import Any, Dict
-# import sys
-# sys.path.append('src')
-from src.modeling import MoT
-# import pandas as pd
-import torch
-# import tqdm
-import albumentations.pytorch as AP
-import numpy as np
-import yaml
-from tokenizers import Tokenizer
-# from torch.utils.data import DataLoader
 import cv2
-# from src.data import BMSDataset, TestTransform
+import yaml
+import warnings
+import torch
+import numpy as np
+import streamlit as st
+import albumentations as A
+import albumentations.pytorch as AP
+from PIL import Image
+
+# Local modules
+from tokenizers import Tokenizer
 from src.modeling import MoT
-from torchvision import transforms
+
+
+
 # Disable warnings and error messages for parallelism.
 warnings.filterwarnings("ignore")
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-from PIL import Image
+
+st.title("Bristol-Myers Squibb – Molecular Translation")
+
 torch.no_grad()
 
 with open("models/mot-large-finetune.yml", "r") as fp:
     cfg = yaml.load(fp, yaml.FullLoader)
-# def main(cfg: Dict[str, Any]):
+
+
 tokenizer = Tokenizer.from_file(cfg["data"]["tokenizer_path"])
-# sample_submission = pd.read_csv(cfg["data"]["label_csv_path"])
-# sample_submission["image_dir"] = cfg["data"]["image_dir"]
 
-# Create dataset and dataloader for test images through a sample submission file.
-# dataset = BMSDataset(
-#     sample_submission,
-#     transform=TestTransform(cfg["model"]["image_size"]),
-# )
-# dataloader = DataLoader(
-#     dataset,
-#     cfg["predict"]["batch_size"],
-#     num_workers=os.cpu_count(),
-#     pin_memory=True,
-# )
 
-# Create a MoT model with given configurations. Note that the parameters will be
-# moved to CUDA memory and converted to half precision if `use_fp16` is specified.
 model = MoT(
     image_size=cfg["model"]["image_size"],
     num_channels=1,
@@ -74,41 +54,25 @@ transform = A.Compose([A.Resize(image_size, image_size, interpolation=cv2.INTER_
                 A.Normalize(mean=0.5, std=0.5),
                 AP.ToTensorV2()])
 
-
-# if cfg["environ"]["precision"] == 16:
-#     model.half()
-
-# Predict InChI strings from the test images.
-# with open(cfg["environ"]["name"] + ".csv", "w") as fp:
-#     fp.write("image_id,InChI\n")
-
-#     for image_ids, images, _ in tqdm.tqdm(dataloader):
 image = st.file_uploader("Upload an image..")
-# if cfg["environ"]["precision"] == 16:
-#     images = images.half()
+
 if image:
-# Generate the InChI strings and update to the submission file.
+    st.subheader("You uploaded:")
     st.image(image)
-    image = Image.open(image)
-    image = np.array(image)
-    transformed = transform(image=image)
-    transformed_image = transformed["image"]
-    transformed_image = transformed_image.unsqueeze(0)
-    inchis = model.generate(
-        transformed_image,
-        max_seq_len=cfg["model"]["max_seq_len"],
-        tokenizer=tokenizer,
-    )
-    st.write(inchis)
-# for image_id, inchi in zip(image_ids, inchis):
-#     fp.write(f'{image_id},"{inchi}"\n')
 
+    button = st.button("Get InChi")
+    if button:
+        image = Image.open(image)
+        image = np.array(image)
+        transformed = transform(image=image)
+        transformed_image = transformed["image"]
+        transformed_image = transformed_image.unsqueeze(0)
+        inchis = model.generate(
+            transformed_image,
+            max_seq_len=cfg["model"]["max_seq_len"],
+            tokenizer=tokenizer,
+        )
 
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("config")
-#     args = parser.parse_args()
+        st.subheader("The InChi for the given chemical compound is:")
+        st.write(inchis[0])
 
-#     with open(args.config, "r") as fp:
-#         cfg = yaml.load(fp, yaml.FullLoader)
-#     main(cfg)
