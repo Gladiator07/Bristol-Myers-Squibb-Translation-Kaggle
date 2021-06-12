@@ -4,10 +4,10 @@ import torch
 import torch.nn as nn
 from tokenizers import Tokenizer
 
-from modeling.attention import AttentionCacheSet
-from modeling.embeddings import GPT2Embedding, ViTEmbedding
-from modeling.heads import LMHead
-from modeling.transformer import Transformer
+from src.modeling.attention import AttentionCacheSet
+from src.modeling.embeddings import GPT2Embedding, ViTEmbedding
+from src.modeling.heads import LMHead
+from src.modeling.transformer import Transformer
 
 try:
     from apex.normalization import FusedLayerNorm as LayerNorm

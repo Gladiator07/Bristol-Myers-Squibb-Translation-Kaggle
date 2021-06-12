@@ -1,7 +1,7 @@
 data:
   image_dir: /mnt/bms-dataset/test
   label_csv_path: /mnt/bms-dataset/sample_submission.csv
-  tokenizer_path: tokenizer.json
+  tokenizer_path: models/tokenizer.json
 
 model:
   image_size: 384
@@ -17,7 +17,7 @@ model:
 
 predict:
   batch_size: 512
-  weight_path: MoT-Large-Finetune.pth
+  weight_path: models/MoT-Large-Finetune.pth
 
 environ:
   name: MoT-Large-Finetune

@@ -1,18 +1,21 @@
 import streamlit as st
 
-st.title("BMS")
+st.title("Bristol-Myers Squibb – Molecular Translation")
 
 
 # def predict():
 import os
+import albumentations as A
 import warnings
 from typing import Any, Dict
-import sys
-sys.path.insert(0, '/media/atharva/DATA1/Bristol-Myers-Kaggle/src')
-from src.modeling import MoT 
+# import sys
+# sys.path.append('src')
+from src.modeling import MoT
 # import pandas as pd
 import torch
 # import tqdm
+import albumentations.pytorch as AP
+import numpy as np
 import yaml
 from tokenizers import Tokenizer
 # from torch.utils.data import DataLoader
@@ -27,7 +30,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from PIL import Image
 torch.no_grad()
 
-with open("mot-large-finetune.yml", "r") as fp:
+with open("models/mot-large-finetune.yml", "r") as fp:
     cfg = yaml.load(fp, yaml.FullLoader)
 # def main(cfg: Dict[str, Any]):
 tokenizer = Tokenizer.from_file(cfg["data"]["tokenizer_path"])
@@ -67,9 +70,9 @@ model.load_state_dict(torch.load(cfg["predict"]["weight_path"]))
 model.eval()
 
 image_size = 384
-transform = transforms.Compose([transforms.Resize(image_size, image_size, interpolation=cv2.INTER_AREA),
-                transforms.Normalize(mean=0.5, std=0.5),
-                transforms.ToTensor()])
+transform = A.Compose([A.Resize(image_size, image_size, interpolation=cv2.INTER_AREA),
+                A.Normalize(mean=0.5, std=0.5),
+                AP.ToTensorV2()])
 
 
 # if cfg["environ"]["precision"] == 16:
@@ -87,10 +90,12 @@ if image:
 # Generate the InChI strings and update to the submission file.
     st.image(image)
     image = Image.open(image)
-    image = transform(image)
-    image = image.unsqueeze(0)
+    image = np.array(image)
+    transformed = transform(image=image)
+    transformed_image = transformed["image"]
+    transformed_image = transformed_image.unsqueeze(0)
     inchis = model.generate(
-        image,
+        transformed_image,
         max_seq_len=cfg["model"]["max_seq_len"],
         tokenizer=tokenizer,
     )

@@ -1,6 +1,6 @@
 import torch.utils.checkpoint as checkpoint
 
-from modeling.transformer import Transformer, TransformerLayer
+from src.modeling.transformer import Transformer, TransformerLayer
 
 
 def modify_transformer_layer_forward(layer: TransformerLayer):

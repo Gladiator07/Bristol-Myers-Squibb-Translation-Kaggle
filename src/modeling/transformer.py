@@ -3,8 +3,8 @@ from typing import Optional, Tuple
 import torch
 import torch.nn as nn
 
-from modeling.attention import AttentionCache, AttentionCacheSet, MultiHeadAttention
-from modeling.feedforward import PositionwiseFeedForward
+from src.modeling.attention import AttentionCache, AttentionCacheSet, MultiHeadAttention
+from src.modeling.feedforward import PositionwiseFeedForward
 
 try:
     from apex.normalization import FusedLayerNorm as LayerNorm
