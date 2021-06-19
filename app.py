@@ -21,7 +21,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 st.title("Bristol-Myers Squibb – Molecular Translation")
-
+st.markdown("---")
 torch.no_grad()
 
 with open("models/mot-large-finetune.yml", "r") as fp:
@@ -60,7 +60,7 @@ if image:
     st.subheader("You uploaded:")
     st.image(image)
 
-    button = st.button("Get InChi")
+    button = st.button("Get InChI")
     if button:
         image = Image.open(image)
         image = np.array(image)
@@ -74,5 +74,5 @@ if image:
         )
 
         st.subheader("The InChi for the given chemical compound is:")
-        st.write(inchis[0])
+        st.write(inchis)
 
