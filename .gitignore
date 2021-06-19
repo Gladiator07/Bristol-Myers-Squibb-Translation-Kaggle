@@ -189,3 +189,7 @@ legacy/*
 *.png
 
 BMSMT-legacy-*/
+
+Docs/
+sdp.jpg
+results.py
