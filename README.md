@@ -2,6 +2,7 @@
 ## Introduction
 This repository is the 50th place solution for the [Bristol-Myers Squibb – Molecular Translation](https://www.kaggle.com/c/bms-molecular-translation/overview) competition.
 
+#### Solution writeup: https://www.kaggle.com/c/bms-molecular-translation/discussion/243820
 ## Requirements
 This project requires the below libraries:
 - torch==1.8.1+cu111
